@@ -243,59 +243,90 @@ class GlobalPhoneManager
         ['Anonymous Numbers', '+888', 9],
     ];
 
-    public static function normalizeNumber($number)
+    public static function normalizeNumber(string $number): array
     {
         $number = preg_replace('/^\+/', '', $number);
         foreach (self::COUNTRY_CODES as $code) {
             if (strpos($number, ltrim($code[1], '+')) === 0) {
-                $prefix = $code[1];
-                $normalizedNumber = substr($number, strlen(ltrim($prefix, '+')));
-                $length = $code[2];
-                $country = $code[0];
-                return [$prefix, $normalizedNumber, $length, $country];
+                $prefix = ltrim($code[1], '+');
+                $normalizedNumber = substr($number, strlen($prefix));
+                return [$prefix, $normalizedNumber];
             }
         }
-        return [null, $number, null, null];
+        return [null, $number];
     }
 
-    public static function isValidNumber($number)
+    public static function isValidNumber(string $number): bool
     {
         $number = preg_replace('/^\+/', '', $number);
         foreach (self::COUNTRY_CODES as $code) {
-            if (strpos($number, ltrim($code[1], '+')) === 0 && strlen(substr($number, strlen(ltrim($code[1], '+')))) == $code[2]) {
+            $prefix = ltrim($code[1], '+');
+            if (strpos($number, $prefix) === 0) {
+                $normalizedNumber = substr($number, strlen($prefix));
+                if (strlen($normalizedNumber) == $code[2]) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static function isValidPrefix(string $number): bool
+    {
+        $number = preg_replace('/^\+/', '', $number);
+        foreach (self::COUNTRY_CODES as $code) {
+            if (strpos($number, ltrim($code[1], '+')) === 0) {
                 return true;
             }
         }
         return false;
     }
 
-    public static function isValidPrefix($prefix)
+    public static function getPrefix(string $number): ?string
     {
+        $number = preg_replace('/^\+/', '', $number);
         foreach (self::COUNTRY_CODES as $code) {
-            if ($code[1] === $prefix) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static function getPrefix($country)
-    {
-        foreach (self::COUNTRY_CODES as $code) {
-            if (strcasecmp($code[0], $country) === 0) {
-                return $code[1];
+            if (strpos($number, ltrim($code[1], '+')) === 0) {
+                return ltrim($code[1], '+');
             }
         }
         return null;
     }
 
-    public static function getCountryName($prefix)
+    public static function getCountryName(string $number): ?string
     {
+        $number = preg_replace('/^\+/', '', $number);
         foreach (self::COUNTRY_CODES as $code) {
-            if ($code[1] === $prefix) {
+            if (strpos($number, ltrim($code[1], '+')) === 0) {
                 return $code[0];
             }
         }
         return null;
+    }
+
+    public static function getNumberLength(string $prefix): ?int
+    {
+        $prefix = ltrim($prefix, '+');
+        foreach (self::COUNTRY_CODES as $code) {
+            if (ltrim($code[1], '+') === $prefix) {
+                return $code[2];
+            }
+        }
+        return null;
+    }
+
+    public static function isCorrectLength(string $number): bool
+    {
+        $number = preg_replace('/^\+/', '', $number);
+        foreach (self::COUNTRY_CODES as $code) {
+            $prefix = ltrim($code[1], '+');
+            if (strpos($number, $prefix) === 0) {
+                $normalizedNumber = substr($number, strlen($prefix));
+                if (strlen($normalizedNumber) == $code[2]) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
