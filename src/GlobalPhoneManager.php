@@ -1,6 +1,7 @@
 <?php
 
 namespace Ispahbod\GlobalPhoneManager;
+
 class GlobalPhoneManager
 {
     public const COUNTRY_CODES = [
