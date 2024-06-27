@@ -17,8 +17,7 @@
     "homepage": "https://github.com/ispahbod/global-phone-manager",
     "require": {
         "php": "^8.2",
-        "illuminate/support": ">=6",
-        "ispahbod/string-manager": "^0.1.8"
+        "illuminate/support": ">=6"
     },
     "require-dev": {
         "phpunit/phpunit": "^8"
